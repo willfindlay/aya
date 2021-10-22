@@ -139,6 +139,8 @@ fn codegen_bindings(opts: &Options) -> Result<(), anyhow::Error> {
         "TC_H_MIN_PRIORITY",
         "TC_H_MIN_INGRESS",
         "TC_H_MIN_EGRESS",
+        // Ringbuf
+        "BPF_RINGBUF_.*",
     ];
 
     let dir = PathBuf::from("aya");
@@ -161,7 +163,12 @@ fn codegen_bindings(opts: &Options) -> Result<(), anyhow::Error> {
             bindgen = bindgen.allowlist_type(x);
         }
         for x in &vars {
-            bindgen = bindgen.allowlist_var(x);
+            bindgen = bindgen
+                .allowlist_var(x)
+                .constified_enum("BTF_KIND_.*")
+                .constified_enum("IFLA_.*")
+                .constified_enum("TCA_.*")
+                .constified_enum("BPF_RINGBUF_.*");
         }
 
         // FIXME: this stuff is probably debian/ubuntu specific
