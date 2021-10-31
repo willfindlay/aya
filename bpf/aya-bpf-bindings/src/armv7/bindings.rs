@@ -228,9 +228,6 @@ pub const SO_TIMESTAMPING_NEW: u32 = 65;
 pub const SO_RCVTIMEO_NEW: u32 = 66;
 pub const SO_SNDTIMEO_NEW: u32 = 67;
 pub const SO_DETACH_REUSEPORT_BPF: u32 = 68;
-pub const SO_PREFER_BUSY_POLL: u32 = 69;
-pub const SO_BUSY_POLL_BUDGET: u32 = 70;
-pub const SO_NETNS_COOKIE: u32 = 71;
 pub const SO_TIMESTAMP: u32 = 29;
 pub const SO_TIMESTAMPNS: u32 = 35;
 pub const SO_TIMESTAMPING: u32 = 37;
@@ -1149,6 +1146,11 @@ pub struct tcp_request_sock {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct udp6_sock {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct unix_sock {
     _unused: [u8; 0],
 }
 #[repr(C)]

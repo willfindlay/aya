@@ -1143,6 +1143,7 @@ impl tcp_sock {}
 impl tcp_timewait_sock {}
 impl tcp_request_sock {}
 impl udp6_sock {}
+impl unix_sock {}
 impl task_struct {}
 impl path {}
 impl inode {}
