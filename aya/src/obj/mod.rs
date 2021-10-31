@@ -18,7 +18,7 @@ use relocation::*;
 
 use crate::{
     bpf_map_def,
-    generated::{bpf_insn, bpf_map_type::BPF_MAP_TYPE_ARRAY},
+    generated::{bpf_insn, bpf_map_type::BPF_MAP_TYPE_ARRAY, BPF_F_MMAPABLE, BPF_F_READONLY},
     obj::btf::{Btf, BtfError, BtfExt},
     BpfError,
 };
@@ -511,7 +511,11 @@ fn parse_map(section: &Section, name: &str) -> Result<Map, ParseError> {
             // .bss will always have data.len() == 0
             value_size: section.size as u32,
             max_entries: 1,
-            map_flags: 0, /* FIXME: set rodata readonly */
+            map_flags: if name.starts_with(".rodata") {
+                BPF_F_MMAPABLE | BPF_F_READONLY
+            } else {
+                BPF_F_MMAPABLE
+            }, /* FIXME: set rodata readonly */
             ..Default::default()
         };
         (def, section.data.to_vec())
