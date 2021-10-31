@@ -40,6 +40,8 @@ pub struct Object {
     pub(crate) functions: HashMap<u64, Function>,
     pub(crate) relocations: HashMap<SectionIndex, HashMap<u64, Relocation>>,
     pub(crate) symbols_by_index: HashMap<usize, Symbol>,
+    // Maps a global variable's name to its map name and offset
+    pub(crate) globals_by_name: HashMap<String, (String, usize)>,
 }
 
 #[derive(Debug, Clone)]
@@ -220,6 +222,7 @@ impl Object {
             functions: HashMap::new(),
             relocations: HashMap::new(),
             symbols_by_index: HashMap::new(),
+            globals_by_name: HashMap::new(),
         }
     }
 
@@ -329,6 +332,9 @@ impl Object {
             name if name == ".bss" || name.starts_with(".data") || name.starts_with(".rodata") => {
                 self.maps
                     .insert(name.to_string(), parse_map(&section, name)?);
+                for relocation in section.relocations {
+                    println!("relocation in {}: {:#?}", name, relocation);
+                }
             }
             name if name.starts_with(".text") => self.parse_text_section(section)?,
             ".BTF" => self.parse_btf(&section)?,
@@ -511,11 +517,7 @@ fn parse_map(section: &Section, name: &str) -> Result<Map, ParseError> {
             // .bss will always have data.len() == 0
             value_size: section.size as u32,
             max_entries: 1,
-            map_flags: if name.starts_with(".rodata") {
-                BPF_F_RDONLY
-            } else {
-                0
-            },
+            map_flags: 0, /* FIXME: set rodata readonly */
             ..Default::default()
         };
         (def, section.data.to_vec())
