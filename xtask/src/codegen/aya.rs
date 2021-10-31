@@ -162,7 +162,10 @@ fn codegen_bindings(opts: &Options) -> Result<(), anyhow::Error> {
             bindgen = bindgen.allowlist_type(x);
         }
         for x in &vars {
-            bindgen = bindgen.allowlist_var(x).constified_enum("BTF_KIND_.*");
+            bindgen = bindgen
+                .allowlist_var(x)
+                .constified_enum("BTF_KIND_.*")
+                .constified_enum("BPF_F_.*");
         }
 
         // FIXME: this stuff is probably debian/ubuntu specific

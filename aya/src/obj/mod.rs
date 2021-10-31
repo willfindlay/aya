@@ -18,7 +18,7 @@ use relocation::*;
 
 use crate::{
     bpf_map_def,
-    generated::{bpf_insn, bpf_map_type::BPF_MAP_TYPE_ARRAY, BPF_F_MMAPABLE, BPF_F_READONLY},
+    generated::{bpf_insn, bpf_map_type::BPF_MAP_TYPE_ARRAY, BPF_F_MMAPABLE, BPF_F_RDONLY},
     obj::btf::{Btf, BtfError, BtfExt},
     BpfError,
 };
