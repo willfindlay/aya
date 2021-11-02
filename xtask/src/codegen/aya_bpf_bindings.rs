@@ -70,9 +70,18 @@ pub fn codegen(opts: &Options) -> Result<(), anyhow::Error> {
     };
 
     for arch in Architecture::supported() {
-        let generated = dir.join("src").join(arch.to_string());
+        let mut bindgen = builder();
 
-        let bindings = builder()
+        // Set target triple
+        let target = match arch {
+            Architecture::X86_64 => "-target x86_64-unknown-linux-gnu",
+            Architecture::ARMv7 => "-target armv7-unknown-linux-gnu",
+            Architecture::AArch64 => "-target aarch64-unknown-linux-gnu",
+        }
+        .split(" ");
+        bindgen = bindgen.clang_args(target);
+
+        let bindings = bindgen
             .generate()
             .map_err(|_| anyhow!("bindgen failed"))?
             .to_string();
@@ -85,6 +94,7 @@ pub fn codegen(opts: &Options) -> Result<(), anyhow::Error> {
         }
 
         // write the bindings, with the original helpers removed
+        let generated = dir.join("src").join(arch.to_string());
         write_to_file_fmt(
             &generated.join("bindings.rs"),
             &tree.to_token_stream().to_string(),

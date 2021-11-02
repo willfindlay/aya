@@ -18,6 +18,10 @@ jobs:
         working-directory: libbpf
         run: echo "LIBBPF_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
+      - name: install multilib
+        run: |
+          sudo apt install -y gcc-multilib
+
       - uses: Swatinem/rust-cache@v1
 
       - name: Run codegen
