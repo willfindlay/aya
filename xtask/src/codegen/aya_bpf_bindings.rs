@@ -73,13 +73,22 @@ pub fn codegen(opts: &Options) -> Result<(), anyhow::Error> {
         let mut bindgen = builder();
 
         // Set target triple
-        let target = match arch {
+        let args = match arch {
             Architecture::X86_64 => "-target x86_64-unknown-linux-gnu",
             Architecture::ARMv7 => "-target armv7-unknown-linux-gnu",
             Architecture::AArch64 => "-target aarch64-unknown-linux-gnu",
         }
         .split(" ");
-        bindgen = bindgen.clang_args(target);
+        bindgen = bindgen.clang_args(args);
+
+        // Define __TARGET_ARCH_*
+        let args = match arch {
+            Architecture::X86_64 => "-D __TARGET_ARCH_x86",
+            Architecture::ARMv7 => "-D __TARGET_ARCH_arm",
+            Architecture::AArch64 => "-D __TARGET_ARCH_arm64",
+        }
+        .split(" ");
+        bindgen = bindgen.clang_args(args);
 
         let bindings = bindgen
             .generate()
